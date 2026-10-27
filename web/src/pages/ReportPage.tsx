@@ -1,3 +1,4 @@
+import { PATIENT_NAME } from '@medsuivi/shared';
 import { useReport } from '../api/history';
 import { fr } from '../i18n/fr';
 import { formatDate, formatTime } from '../lib/tunis';
@@ -57,6 +58,9 @@ export function ReportPage() {
           </span>
           Rapport de suivi des médicaments
         </h2>
+        <p className="pt-2 text-lg">
+          Patient : <span className="font-bold">{PATIENT_NAME}</span>
+        </p>
         <p className="pt-2 text-lg">
           Période : {formatDate(data.from)} au {formatDate(data.to)} ({data.days} jours)
         </p>

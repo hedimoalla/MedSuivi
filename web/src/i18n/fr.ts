@@ -37,6 +37,7 @@ export const fr = {
   },
   app: {
     name: 'MedSuivi',
+    patientLine: (name: string) => `Application pour ${name}`,
     disclaimer:
       "Outil de suivi et de rappel, pas un avis médical. La liste doit toujours suivre l'ordonnance du médecin.",
   },

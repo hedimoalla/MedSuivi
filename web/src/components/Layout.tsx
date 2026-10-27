@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
+import { PATIENT_NAME } from '@medsuivi/shared';
 import { fr } from '../i18n/fr';
 import { apiFetch } from '../api/client';
 import { ThemeToggle } from './ThemeToggle';
@@ -28,7 +29,10 @@ export function Layout({ children }: { children: ReactNode }) {
           >
             {fr.icons.app}
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight">{fr.app.name}</h1>
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight">{fr.app.name}</h1>
+            <p className="text-base text-muted">{fr.app.patientLine(PATIENT_NAME)}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />

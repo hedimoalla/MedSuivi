@@ -1,3 +1,5 @@
+import { PATIENT_NAME } from '@medsuivi/shared';
+
 const escapeHtml = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -50,6 +52,7 @@ export function loginPage(options: { error?: string } = {}): string {
     'Connexion',
     `<div class="logo" aria-hidden="true">💊</div>
     <h1>MedSuivi</h1>
+    <p class="muted">Application pour ${escapeHtml(PATIENT_NAME)}</p>
     <p>Bienvenue 👋 Connectez-vous avec votre compte Google de la famille.</p>
     ${error}
     <a class="button" href="/auth/google"><span aria-hidden="true">🔐</span> Se connecter avec Google</a>
