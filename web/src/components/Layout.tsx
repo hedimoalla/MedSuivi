@@ -59,11 +59,11 @@ export function Layout({ children }: { children: ReactNode }) {
           </span>
           {fr.nav.medications}
         </NavLink>
-        <NavLink to="/journal" className={navClass}>
+        <NavLink to="/historique" className={navClass}>
           <span aria-hidden="true" className="text-2xl">
-            {fr.icons.audit}
+            {fr.icons.history}
           </span>
-          {fr.nav.audit}
+          {fr.nav.history}
         </NavLink>
       </nav>
 
