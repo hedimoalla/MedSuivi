@@ -1,0 +1,39 @@
+# Blueprint Render : un service web Node. La base est Supabase (hors Render), via DATABASE_URL.
+# Les valeurs marquées sync: false sont saisies dans le tableau de bord Render, jamais dans ce fichier.
+services:
+  - type: web
+    name: medsuivi
+    runtime: node
+    plan: free
+    region: frankfurt
+    healthCheckPath: /health
+    # Installe aussi les outils de build (prisma, esbuild, vite), puis génère le client Prisma.
+    buildCommand: npm ci --include=dev && npm run db:generate && npm run build
+    # Applique les migrations en attente (sans effet si elles sont déjà appliquées), puis démarre.
+    startCommand: npm run db:migrate && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: Africa/Tunis
+      - key: DEV_AUTH_BYPASS
+        value: 'false'
+      # Certificat racine Supabase, à ajouter comme « Secret File » nommé supabase-ca.crt (voir README).
+      - key: DATABASE_CA_PATH
+        value: /etc/secrets/supabase-ca.crt
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
+      - key: ALLOWED_EMAILS
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false

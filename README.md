@@ -6,13 +6,13 @@ Checklist partagée de prise de médicaments pour la famille. Chaque jour, les p
 
 ## État d'avancement
 
-| Phase | Contenu                                                                                  | État    |
-| ----- | ---------------------------------------------------------------------------------------- | ------- |
-| a     | Structure, base de données, connexion Google, allowlist, sessions, tests d'auth          | ✅      |
-| b     | Gestion des médicaments, horaires datés, journal des modifications, seed de l'ordonnance | ✅      |
-| c     | Checklist du jour et enregistrement des prises (cases à cocher, doses au besoin)         | ✅      |
-| d     | Historique (calendrier) et rapport imprimable pour le cardiologue                        | ✅      |
-| e     | PWA, déploiement Render, `render.yaml`                                                   | à venir |
+| Phase | Contenu                                                                                  | État     |
+| ----- | ---------------------------------------------------------------------------------------- | -------- |
+| a     | Structure, base de données, connexion Google, allowlist, sessions, tests d'auth          | ✅       |
+| b     | Gestion des médicaments, horaires datés, journal des modifications, seed de l'ordonnance | ✅       |
+| c     | Checklist du jour et enregistrement des prises (cases à cocher, doses au besoin)         | ✅       |
+| d     | Historique (calendrier) et rapport imprimable pour le cardiologue                        | ✅       |
+| e     | Déploiement Render (`render.yaml`, base Supabase) ✅ · PWA installable à venir           | en cours |
 
 ## Fonctionnalités
 
@@ -123,6 +123,52 @@ Les tests couvrent : la connexion Google et l'allowlist, les horaires datés (le
 8. Copiez l'**ID client** dans `GOOGLE_CLIENT_ID` et le **code secret** dans `GOOGLE_CLIENT_SECRET`.
 
 **Domaine personnalisé** : si vous ajoutez un domaine plus tard, ajoutez `https://<votre-domaine>/auth/google/callback` aux URI de redirection, et mettez `APP_BASE_URL` à `https://<votre-domaine>`. Les deux doivent correspondre exactement, sinon Google refuse la connexion.
+
+## Déploiement sur Render
+
+Le fichier `render.yaml` décrit le service web. La base reste sur Supabase : Render n'en crée pas.
+
+**1. Créer le service**
+
+1. Sur https://dashboard.render.com : **New → Blueprint**, puis choisissez le dépôt `hedimoalla/MedSuivi`.
+2. Render lit `render.yaml` et propose le service `medsuivi` (région Francfort, plan Free). Validez.
+
+**2. Renseigner les variables** (**Environment** du service). Les valeurs ne sont jamais dans le dépôt.
+
+| Variable               | Valeur                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| `DATABASE_URL`         | URL **Session pooler** de Supabase, avec le mot de passe et `?sslmode=require`     |
+| `SESSION_SECRET`       | chaîne aléatoire de 32 caractères ou plus (`openssl rand -base64 48`)              |
+| `GOOGLE_CLIENT_ID`     | ID du client OAuth                                                                 |
+| `GOOGLE_CLIENT_SECRET` | code secret du client OAuth                                                        |
+| `APP_BASE_URL`         | `https://medsuivi.onrender.com` (ou l'adresse affichée par Render, sans `/` final) |
+| `ALLOWED_EMAILS`       | les trois adresses, en minuscules, séparées par des virgules                       |
+| `ADMIN_EMAILS`         | l'administrateur, inclus dans `ALLOWED_EMAILS`                                     |
+
+`NODE_ENV=production` et `DEV_AUTH_BYPASS=false` sont déjà fixés par le blueprint. L'application refuse de démarrer si `DEV_AUTH_BYPASS` est activé hors développement.
+
+**3. Ajouter le certificat Supabase** (**Environment → Secret Files → Add Secret File**) :
+
+- **Filename** : `supabase-ca.crt` (le chemin `/etc/secrets/supabase-ca.crt` est déjà configuré)
+- **Contents** : le contenu du fichier `prod-ca-2021.crt`, de `-----BEGIN CERTIFICATE-----` à `-----END CERTIFICATE-----`
+
+Ce certificat permet de vérifier la connexion TLS à Supabase. Ne le committez jamais.
+
+**4. Autoriser l'adresse Render dans Google Cloud**. Dans le client OAuth, ajoutez aux **URI de redirection autorisés** :
+`https://medsuivi.onrender.com/auth/google/callback` (remplacez par votre adresse exacte).
+
+**5. Démarrer et vérifier**
+
+- Le premier déploiement lance les migrations puis le serveur (`npm run db:migrate && npm start`).
+- Vérifiez `https://<votre-adresse>/health` : la réponse doit être `{"status":"ok"}`.
+- Ouvrez l'adresse dans un navigateur, connectez-vous avec Google.
+
+**Points à connaître**
+
+- **Démarrage à froid** : le plan Free met le service en veille après 15 minutes sans trafic. Le premier chargement prend 30 à 60 secondes.
+- **Une seule base** : la production et le développement local utilisent la même base Supabase. Une prise cochée en local apparaît donc sur Render, et réciproquement. Pour séparer les deux, créez un second projet Supabase et utilisez son URL dans votre `.env` local.
+- **Seed** : l'ordonnance est déjà chargée dans la base. Ne relancez pas `seed:prescription` en production.
+- **Changer l'adresse** : si l'adresse `APP_BASE_URL` change, mettez à jour aussi les URI de redirection Google.
 
 ## Sauvegarde de la base
 

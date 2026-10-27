@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --env-file=../.env src/index.ts",
-    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/index.js --sourcemap",
+    "dev": "node scripts/with-env.mjs tsx watch src/index.ts",
+    "build": "node scripts/build.mjs",
     "start": "node dist/index.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "node --env-file=../.env ../node_modules/prisma/build/index.js migrate deploy",
-    "db:generate": "node --env-file=../.env ../node_modules/prisma/build/index.js generate",
-    "seed:prescription": "tsx --env-file=../.env scripts/seed-prescription.ts",
-    "sync:allowlist": "tsx --env-file=../.env scripts/sync-allowlist.ts"
+    "db:migrate": "node scripts/with-env.mjs prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "seed:prescription": "node scripts/with-env.mjs tsx scripts/seed-prescription.ts",
+    "sync:allowlist": "node scripts/with-env.mjs tsx scripts/sync-allowlist.ts"
   },
   "dependencies": {
     "@medsuivi/shared": "^0.1.0",
