@@ -51,9 +51,9 @@ describe('buildChecklist', () => {
     );
     expect(checklist.sections.map((section) => section.slot)).toEqual([
       'BREAKFAST',
+      'OUTSIDE_MEALS',
       'LUNCH',
       'DINNER',
-      'OUTSIDE_MEALS',
       'BEDTIME',
     ]);
     expect(itemsOf(checklist, 'BREAKFAST')).toEqual(['Pidogrel']);

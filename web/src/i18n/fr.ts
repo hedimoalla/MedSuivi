@@ -70,6 +70,7 @@ export const fr = {
     extraDelete: 'Supprimer',
     extraEmpty: 'Aucune dose au besoin ce jour-là.',
     loading: 'Chargement…',
+    outsideTime: '11h',
     todayLabel: "Aujourd'hui",
     pastLabel: 'Jour passé',
     futureLabel: 'Jour à venir',

@@ -1,5 +1,5 @@
 // Ordre d'affichage de la journée : hors repas passe avant le coucher.
-export const SLOTS = ['BREAKFAST', 'LUNCH', 'DINNER', 'OUTSIDE_MEALS', 'BEDTIME'] as const;
+export const SLOTS = ['BREAKFAST', 'OUTSIDE_MEALS', 'LUNCH', 'DINNER', 'BEDTIME'] as const;
 export type Slot = (typeof SLOTS)[number];
 
 export const MEAL_RELATIONS = ['BEFORE', 'DURING', 'AFTER', 'AWAY', 'NONE'] as const;
@@ -14,5 +14,5 @@ export const SLOT_DEFAULT_TIMES: Record<Slot, string> = {
   LUNCH: '15:00',
   DINNER: '21:00',
   BEDTIME: '23:30',
-  OUTSIDE_MEALS: '20:00',
+  OUTSIDE_MEALS: '11:00',
 };

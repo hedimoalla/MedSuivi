@@ -42,6 +42,9 @@ export function SlotCard({ section, date, today, nowHHmm, pending, onToggle }: P
             {fr.icons.slots[section.slot]}
           </span>
           {fr.slots[section.slot]}
+          {section.slot === 'OUTSIDE_MEALS' && (
+            <span className="text-lg font-semibold text-muted">· {fr.today.outsideTime}</span>
+          )}
         </h2>
         <div className="flex items-center gap-2">
           {section.total > 0 && (
