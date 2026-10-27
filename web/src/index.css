@@ -89,3 +89,34 @@ img,
 svg {
   max-width: 100%;
 }
+
+/* Impression : fond blanc, encre noire, quel que soit le thème choisi à l'écran. */
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    --color-page: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #ffffff;
+    --color-fg: #000000;
+    --color-muted: #222222;
+    --color-line: #000000;
+    --color-accent: #000000;
+    --color-accent-fg: #ffffff;
+    --color-accent-soft: #ffffff;
+    --color-success: #000000;
+    --color-success-soft: #ffffff;
+    --color-danger: #000000;
+    --color-danger-soft: #ffffff;
+    --color-warning: #000000;
+    --color-warning-soft: #ffffff;
+    --color-shadow: transparent;
+  }
+
+  body {
+    font-size: 13pt;
+  }
+
+  * {
+    box-shadow: none !important;
+  }
+}

@@ -6,6 +6,7 @@ export const fr = {
     today: '📅',
     medications: '💊',
     audit: '📜',
+    history: '📅',
     logout: '🚪',
     themeLight: '🌙',
     themeDark: '☀️',
@@ -39,6 +40,7 @@ export const fr = {
   nav: {
     today: "Aujourd'hui",
     medications: 'Médicaments',
+    history: 'Historique',
     audit: 'Journal',
     logout: 'Se déconnecter',
   },

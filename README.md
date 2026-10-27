@@ -9,10 +9,20 @@ Checklist partagée de prise de médicaments pour la famille. Chaque jour, les p
 | Phase | Contenu                                                                                  | État    |
 | ----- | ---------------------------------------------------------------------------------------- | ------- |
 | a     | Structure, base de données, connexion Google, allowlist, sessions, tests d'auth          | ✅      |
-| b     | Gestion des médicaments, horaires datés, journal des modifications, seed de l'ordonnance | à venir |
-| c     | Checklist du jour et enregistrement des prises                                           | à venir |
-| d     | Historique et vue imprimable                                                             | à venir |
+| b     | Gestion des médicaments, horaires datés, journal des modifications, seed de l'ordonnance | ✅      |
+| c     | Checklist du jour et enregistrement des prises (cases à cocher, doses au besoin)         | ✅      |
+| d     | Historique (calendrier) et rapport imprimable pour le cardiologue                        | ✅      |
 | e     | PWA, déploiement Render, `render.yaml`                                                   | à venir |
+
+## Fonctionnalités
+
+- **Écran Aujourd'hui** : les prises sont regroupées par moment (🍳 petit-déjeuner, 🥗 déjeuner, 🍲 dîner, 🛏️ avant le coucher, ⏰ hors repas). Chaque prise a une case à cocher ; l'app affiche qui a coché et à quelle heure. Les flèches ← → permettent de revoir ou de corriger un jour passé. Un moment est marqué ✅ terminé ou ⚠️ en retard selon son heure indicative. La page se rafraîchit toutes les 20 secondes, pour que toute la famille voie le même état.
+- **Doses au besoin** : une dose hors planning peut être ajoutée avec une remarque facultative.
+- **Médicaments** : réservés à l'administrateur (voir `ADMIN_EMAILS`). Création, modification à partir d'une date d'effet, archivage et restauration. Une modification ne change jamais les jours passés, et rien n'est supprimé physiquement.
+- **Journal des modifications** : qui a changé quoi, et quand. Accessible depuis la page Médicaments.
+- **Historique** : calendrier mensuel. Chaque jour est coloré selon ✅ tout pris, 🟡 en partie, ❌ rien de pris, ⏳ en cours. Toucher un jour l'ouvre dans l'écran Aujourd'hui.
+- **Rapport** (🖨️) : médicaments en cours, observance sur les 30 derniers jours par médicament, doses au besoin. Imprimable ou enregistrable en PDF depuis le navigateur.
+- **Thème** : mode clair par défaut, mode sombre activable avec le bouton 🌙 / ☀️. Le choix est mémorisé sur l'appareil.
 
 ## Prérequis
 
@@ -47,6 +57,7 @@ Toutes les variables sont listées dans `.env.example`. Le fichier `.env` n'est 
 | `GOOGLE_CLIENT_SECRET` | Code secret du client OAuth                                                                                                                            |                                                                                                                |
 | `APP_BASE_URL`         | Adresse publique de l'app, sans `/` final                                                                                                              | `http://localhost:3000` en local                                                                               |
 | `ALLOWED_EMAILS`       | Adresses Google autorisées, séparées par des virgules                                                                                                  | `moi@gmail.com,frere@gmail.com,mere@gmail.com`                                                                 |
+| `ADMIN_EMAILS`         | Administrateur(s) : seuls eux peuvent ajouter, modifier ou archiver un médicament. Doit être inclus dans `ALLOWED_EMAILS`                              | `moi@gmail.com`                                                                                                |
 | `NODE_ENV`             | `development`, `test` ou `production`                                                                                                                  | `development`                                                                                                  |
 | `DEV_AUTH_BYPASS`      | `true` = connexion locale sans Google. **Refusé** si `NODE_ENV` n'est pas `development`                                                                | `false`                                                                                                        |
 | `PORT`                 | Port d'écoute                                                                                                                                          | `3000`                                                                                                         |
@@ -74,18 +85,29 @@ Pour créer une nouvelle migration après avoir modifié `server/prisma/schema.p
 
 ## Seed de l'ordonnance et synchronisation de l'allowlist
 
-_À venir (phase b)._ Le seed chargera l'ordonnance du Dr Mehdi Kerkeni, séparément des migrations, et ne sera jamais lancé automatiquement en production. La synchronisation de `ALLOWED_EMAILS` vers la table `users` sera une commande dédiée. Les deux sont décrites ici à leur sortie.
+Le seed charge l'ordonnance du Dr Mehdi Kerkeni (du 26/10/2026 au 26/01/2027). Il est séparé des migrations et n'est jamais lancé automatiquement.
+
+```bash
+npm run seed:prescription   # ajoute les médicaments absents ; les existants sont ignorés
+npm run sync:allowlist      # crée les comptes des adresses de ALLOWED_EMAILS
+```
+
+- Le seed est idempotent : le relancer ne crée pas de doublons.
+- Il refuse de tourner avec `NODE_ENV=production` sans l'option `--force`.
+- Les modifications du seed sont attribuées au premier e-mail de `ALLOWED_EMAILS`.
+- La synchronisation ne supprime rien : un compte retiré de `ALLOWED_EMAILS` est simplement refusé à sa prochaine connexion, et déconnecté à sa prochaine requête.
+- La famille doit vérifier la liste à l'écran contre l'ordonnance et les boîtes.
 
 ## Tests et qualité
 
 ```bash
-npm test          # tests du serveur (auth, politique de connexion, config)
+npm test          # 65 tests du serveur
 npm run typecheck # vérification TypeScript de tous les espaces de travail
 npm run lint      # ESLint
 npm run format    # Prettier
 ```
 
-Les tests n'appellent jamais Google : la réponse de Google est simulée. Ils n'ont pas besoin de base de données.
+Les tests couvrent : la connexion Google et l'allowlist, les horaires datés (le passé reste figé), la checklist du jour (créneaux, jours de la semaine, dates de début et de fin, prises « hors repas »), l'observance, la validation des saisies et les droits de l'administrateur. Les tests n'appellent jamais Google et n'ont pas besoin de base de données : les réponses de Google sont simulées.
 
 ## Configurer Google Cloud Console
 
@@ -123,15 +145,16 @@ Testez la restauration sur une base de test avant d'en avoir besoin.
 - Seules les adresses de `ALLOWED_EMAILS` peuvent ouvrir une session. Une adresse retirée de la liste est déconnectée à sa prochaine requête.
 - Aucun mot de passe n'est stocké. La connexion passe uniquement par Google (flux de code d'autorisation, côté serveur).
 - Les cookies sont `httpOnly`, `SameSite=Lax`, et `secure` en production. Ils durent 30 jours et se renouvellent à chaque visite.
-- Les journaux ne contiennent ni médicaments ni adresses e-mail.
+- En production, les journaux ne contiennent que le nom de l'erreur : ni médicaments, ni adresses e-mail. En développement, le message d'erreur complet est affiché pour faciliter la correction.
+- Les modifications de médicaments et les prises cochées sont attribuées à la personne connectée.
 - Ne committez jamais `.env`, un certificat ou une sauvegarde de base.
 
 ## Structure du dépôt
 
 ```
 shared/   constantes partagées (créneaux, relations aux repas)
-server/   API Express, Prisma, authentification, tests
-web/      interface React (Vite, Tailwind)
+server/   API Express, Prisma, authentification, horaires, checklist, historique, tests
+web/      interface React (Vite, Tailwind) : Aujourd'hui, Médicaments, Historique, Rapport
 ```
 
 Les conventions du projet sont décrites dans [CLAUDE.md](CLAUDE.md).

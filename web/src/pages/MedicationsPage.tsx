@@ -60,6 +60,14 @@ export function MedicationsPage() {
 
       {list.length === 0 && <p className="text-lg">{fr.medications.empty}</p>}
 
+      <Link
+        to="/journal"
+        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface px-4 text-lg font-semibold shadow-sm"
+      >
+        <span aria-hidden="true">📜</span>
+        Journal des modifications
+      </Link>
+
       <ul className="flex flex-col gap-4">
         {list.map((medication) => (
           <li

@@ -4,6 +4,8 @@ import { TodayPage } from './pages/TodayPage';
 import { MedicationsPage } from './pages/MedicationsPage';
 import { MedicationFormPage } from './pages/MedicationFormPage';
 import { AuditPage } from './pages/AuditPage';
+import { HistoryPage } from './pages/HistoryPage';
+import { ReportPage } from './pages/ReportPage';
 
 export function App() {
   return (
@@ -15,6 +17,8 @@ export function App() {
           <Route path="/medicaments/nouveau" element={<MedicationFormPage />} />
           <Route path="/medicaments/:id" element={<MedicationFormPage />} />
           <Route path="/journal" element={<AuditPage />} />
+          <Route path="/historique" element={<HistoryPage />} />
+          <Route path="/imprimer" element={<ReportPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>

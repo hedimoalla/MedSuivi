@@ -19,7 +19,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-4 pb-10 pt-4">
-      <header className="flex items-center justify-between gap-3 pb-4">
+      <header className="flex items-center justify-between gap-3 pb-4 print:hidden">
         <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
@@ -68,7 +68,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="mt-10 flex gap-3 rounded-2xl bg-surface-2 p-4 text-base text-muted">
+      <footer className="mt-10 flex gap-3 rounded-2xl bg-surface-2 p-4 text-base text-muted print:hidden">
         <span aria-hidden="true" className="text-xl">
           {fr.icons.info}
         </span>
