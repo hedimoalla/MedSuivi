@@ -15,6 +15,7 @@
     "sync:allowlist": "tsx --env-file=../.env scripts/sync-allowlist.ts"
   },
   "dependencies": {
+    "@medsuivi/shared": "^0.1.0",
     "@prisma/client": "^6.19.3",
     "connect-pg-simple": "^10.0.0",
     "date-fns": "^4.4.0",

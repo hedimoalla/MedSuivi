@@ -1,7 +1,13 @@
+export interface ValidationIssue {
+  path: string;
+  message: string;
+}
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly code: string,
+    readonly issues: ValidationIssue[] = [],
   ) {
     super(code);
   }
@@ -26,8 +32,11 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     throw new ApiError(401, 'unauthenticated');
   }
   if (!response.ok) {
-    const body = (await response.json().catch(() => ({}))) as { error?: string };
-    throw new ApiError(response.status, body.error ?? 'unknown');
+    const body = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      issues?: ValidationIssue[];
+    };
+    throw new ApiError(response.status, body.error ?? 'unknown', body.issues ?? []);
   }
   if (response.status === 204) {
     return undefined as T;

@@ -11,11 +11,16 @@ import type { Strategy as PassportStrategy } from 'passport';
 import { requireApiAuth, requirePageAuth } from './auth/requireAuth';
 import type { UserStore } from './auth/userStore';
 import { createSessionMiddleware } from './session';
+import { createApiRouter } from './medications/routes';
+import { createDaysRouter } from './days/routes';
+import type { PrismaClient } from '@prisma/client';
 
 export interface AppDeps {
   config: AppConfig;
   users: UserStore;
   sessionStore?: session.Store;
+  /** Accès à la base pour les médicaments et le journal. Absent dans les tests d'auth. */
+  prisma?: PrismaClient;
   /** Remplace la stratégie Google (tests uniquement). */
   googleStrategy?: PassportStrategy;
   /** Dossier du build web (par défaut web/dist). */
@@ -82,13 +87,17 @@ export function createApp(deps: AppDeps): express.Express {
     app.use(express.static(webDist, { index: false, maxAge: '1h' }));
   }
 
-  const apiAuth = requireApiAuth(users, config.allowedEmails);
-  const pageAuth = requirePageAuth(users, config.allowedEmails);
+  const apiAuth = requireApiAuth(users, config.allowedEmails, config.adminEmails);
+  const pageAuth = requirePageAuth(users, config.allowedEmails, config.adminEmails);
 
   app.use('/api', apiAuth);
   app.get('/api/me', (req, res) => {
     res.json({ user: req.user });
   });
+  if (deps.prisma) {
+    app.use('/api', createApiRouter({ prisma: deps.prisma }));
+    app.use('/api', createDaysRouter({ prisma: deps.prisma }));
+  }
 
   // Tout le reste (application React) : authentification requise.
   app.get(/^\/(?!api\/).*/, pageAuth, (_req, res, next) => {

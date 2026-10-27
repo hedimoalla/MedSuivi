@@ -11,6 +11,7 @@ const app = createApp({
   config,
   users,
   sessionStore: createSessionStore(config),
+  prisma,
 });
 
 const server = app.listen(config.port, () => {

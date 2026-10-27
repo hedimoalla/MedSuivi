@@ -1,35 +1,58 @@
 @import 'tailwindcss';
 
-:root {
-  color-scheme: light dark;
-  --color-bg: #ffffff;
-  --color-fg: #111111;
-  --color-muted: #4b5563;
-  --color-accent: #0b5cad;
+/* Palette claire par défaut. Le mode sombre est activé par data-theme="dark" sur <html>. */
+@theme {
+  --color-page: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #eaf0f7;
+  --color-fg: #14202e;
+  --color-muted: #4b5a6b;
+  --color-line: #b9c6d6;
+  --color-accent: #0c6b5e;
   --color-accent-fg: #ffffff;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-bg: #111111;
-    --color-fg: #ffffff;
-    --color-muted: #d1d5db;
-    --color-accent: #7fb8ff;
-    --color-accent-fg: #000000;
-  }
+  --color-accent-soft: #d6eee9;
+  --color-success: #16794a;
+  --color-success-soft: #dcf5e6;
+  --color-danger: #b42318;
+  --color-danger-soft: #fde4e1;
+  --color-warning: #7a4300;
+  --color-warning-soft: #fff1d6;
+  --color-shadow: rgb(20 32 46 / 0.1);
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #111111;
-  --color-fg: #ffffff;
-  --color-muted: #d1d5db;
-  --color-accent: #7fb8ff;
-  --color-accent-fg: #000000;
+  --color-page: #0e1520;
+  --color-surface: #172233;
+  --color-surface-2: #1d2b3f;
+  --color-fg: #eef3f9;
+  --color-muted: #b7c3d2;
+  --color-line: #3d4f66;
+  --color-accent: #5cd3b8;
+  --color-accent-fg: #06201b;
+  --color-accent-soft: #173d37;
+  --color-success: #6fe0a6;
+  --color-success-soft: #173b2a;
+  --color-danger: #ff8a80;
+  --color-danger-soft: #4a1d1a;
+  --color-warning: #ffcc70;
+  --color-warning-soft: #433116;
+  --color-shadow: rgb(0 0 0 / 0.45);
+}
+
+:root {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background: var(--color-page);
   color: var(--color-fg);
   font-family:
     system-ui,
@@ -37,6 +60,32 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Zones tactiles : au moins 48 px de haut, pour les doigts et les petits téléphones. */
+button,
+a {
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+img,
+svg {
+  max-width: 100%;
 }

@@ -15,6 +15,7 @@ const schema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   APP_BASE_URL: z.string().url(),
   ALLOWED_EMAILS: z.string().default(''),
+  ADMIN_EMAILS: z.string().default(''),
   DEV_AUTH_BYPASS: bool,
 });
 
@@ -43,8 +44,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
     throw new Error('ALLOWED_EMAILS doit contenir au moins une adresse');
   }
 
+  const adminEmails = parsed.ADMIN_EMAILS.split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter((email) => email.length > 0);
+  for (const admin of adminEmails) {
+    if (!allowedEmails.includes(admin)) {
+      throw new Error(`ADMIN_EMAILS contient ${admin}, qui n'est pas dans ALLOWED_EMAILS`);
+    }
+  }
+
   return {
     nodeEnv: parsed.NODE_ENV,
+    adminEmails: new Set(adminEmails),
     port: parsed.PORT,
     databaseUrl: parsed.DATABASE_URL,
     databaseCaPath: parsed.DATABASE_CA_PATH || undefined,
