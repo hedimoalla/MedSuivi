@@ -6,13 +6,13 @@ Checklist partagée de prise de médicaments pour la famille. Chaque jour, les p
 
 ## État d'avancement
 
-| Phase | Contenu                                                                                  | État     |
-| ----- | ---------------------------------------------------------------------------------------- | -------- |
-| a     | Structure, base de données, connexion Google, allowlist, sessions, tests d'auth          | ✅       |
-| b     | Gestion des médicaments, horaires datés, journal des modifications, seed de l'ordonnance | ✅       |
-| c     | Checklist du jour et enregistrement des prises (cases à cocher, doses au besoin)         | ✅       |
-| d     | Historique (calendrier) et rapport imprimable pour le cardiologue                        | ✅       |
-| e     | Déploiement Render (`render.yaml`, base Supabase) ✅ · PWA installable à venir           | en cours |
+| Phase | Contenu                                                                                  | État |
+| ----- | ---------------------------------------------------------------------------------------- | ---- |
+| a     | Structure, base de données, connexion Google, allowlist, sessions, tests d'auth          | ✅   |
+| b     | Gestion des médicaments, horaires datés, journal des modifications, seed de l'ordonnance | ✅   |
+| c     | Checklist du jour et enregistrement des prises (cases à cocher, doses au besoin)         | ✅   |
+| d     | Historique (calendrier) et rapport imprimable pour le cardiologue                        | ✅   |
+| e     | Déploiement Render (`render.yaml`, base Supabase) et PWA installable                     | ✅   |
 
 ## Fonctionnalités
 
@@ -22,6 +22,7 @@ Checklist partagée de prise de médicaments pour la famille. Chaque jour, les p
 - **Journal des modifications** : qui a changé quoi, et quand. Accessible depuis la page Médicaments.
 - **Historique** : calendrier mensuel. Chaque jour est coloré selon ✅ tout pris, 🟡 en partie, ❌ rien de pris, ⏳ en cours. Toucher un jour l'ouvre dans l'écran Aujourd'hui.
 - **Rapport** (🖨️) : médicaments en cours, observance sur les 30 derniers jours par médicament, doses au besoin. Imprimable ou enregistrable en PDF depuis le navigateur.
+- **Installation sur téléphone** : l'app s'installe sur l'écran d'accueil (Android : bouton « Installer » ou menu du navigateur ; iPhone : Partager → « Sur l'écran d'accueil »). Elle s'ouvre alors en plein écran, avec l'icône 💊. Seuls les fichiers de l'interface sont mis en cache ; les données de santé ne sont jamais stockées sur l'appareil.
 - **Thème** : mode clair par défaut, mode sombre activable avec le bouton 🌙 / ☀️. Le choix est mémorisé sur l'appareil.
 
 ## Prérequis
@@ -125,6 +126,8 @@ Les tests couvrent : la connexion Google et l'allowlist, les horaires datés (le
 **Domaine personnalisé** : si vous ajoutez un domaine plus tard, ajoutez `https://<votre-domaine>/auth/google/callback` aux URI de redirection, et mettez `APP_BASE_URL` à `https://<votre-domaine>`. Les deux doivent correspondre exactement, sinon Google refuse la connexion.
 
 ## Déploiement sur Render
+
+Adresse de production : https://medsuivi.onrender.com
 
 Le fichier `render.yaml` décrit le service web. La base reste sur Supabase : Render n'en crée pas.
 

@@ -28,6 +28,9 @@ export const fr = {
       OUTSIDE_MEALS: '⏰',
     },
   },
+  install: {
+    button: 'Installer MedSuivi sur l’écran d’accueil',
+  },
   theme: {
     toDark: 'Passer en mode sombre',
     toLight: 'Passer en mode clair',

@@ -7,6 +7,15 @@ import './index.css';
 
 applyTheme(getTheme());
 
+// Le service worker ne met en cache que les fichiers statiques (voir public/sw.js).
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Sans service worker, l'app fonctionne normalement : seule l'installation est indisponible.
+    });
+  });
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, refetchOnWindowFocus: true },

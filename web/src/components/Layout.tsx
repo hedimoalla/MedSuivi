@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { fr } from '../i18n/fr';
 import { apiFetch } from '../api/client';
 import { ThemeToggle } from './ThemeToggle';
+import { InstallButton } from './InstallButton';
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   `flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 text-center text-base font-semibold transition-colors ${
@@ -65,6 +66,10 @@ export function Layout({ children }: { children: ReactNode }) {
           {fr.nav.audit}
         </NavLink>
       </nav>
+
+      <div className="print:hidden pb-4">
+        <InstallButton />
+      </div>
 
       <main className="flex-1">{children}</main>
 

@@ -25,6 +25,19 @@ export default tseslint.config(
     },
   },
   {
+    // Service worker : globales du contexte worker, pas du navigateur.
+    files: ['**/sw.js'],
+    languageOptions: {
+      globals: {
+        self: 'readonly',
+        caches: 'readonly',
+        fetch: 'readonly',
+        location: 'readonly',
+        URL: 'readonly',
+      },
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
