@@ -1,0 +1,41 @@
+{
+  "name": "medsuivi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Checklist partagée de prise de médicaments pour la famille",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.18"
+  },
+  "workspaces": [
+    "shared",
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace server",
+    "dev:web": "npm run dev --workspace web",
+    "dev": "npm run dev:web & npm run dev:server",
+    "build": "npm run build --workspace web && npm run build --workspace server",
+    "start": "npm run start --workspace server",
+    "test": "npm test --workspace server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:migrate": "npm run db:migrate --workspace server",
+    "db:generate": "npm run db:generate --workspace server",
+    "seed:prescription": "npm run seed:prescription --workspace server",
+    "sync:allowlist": "npm run sync:allowlist --workspace server"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^6.4.5",
+    "vitest": "^3.2.7"
+  }
+}

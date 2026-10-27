@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Slot {
+  BREAKFAST
+  LUNCH
+  DINNER
+  BEDTIME
+  OUTSIDE_MEALS
+}
+
+enum MealRelation {
+  BEFORE
+  DURING
+  AFTER
+  AWAY
+  NONE
+}
+
+model User {
+  id          String    @id @default(uuid())
+  googleSub   String?   @unique
+  email       String    @unique
+  name        String?
+  avatarUrl   String?
+  createdAt   DateTime  @default(now())
+  lastLoginAt DateTime?
+
+  doseLogs      DoseLog[]
+  extraDoseLogs ExtraDoseLog[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model Medication {
+  id         String    @id @default(uuid())
+  name       String
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  schedules     Schedule[]
+  doseLogs      DoseLog[]
+  extraDoseLogs ExtraDoseLog[]
+
+  @@map("medications")
+}
+
+// Chaque ligne = une prise (médicament + créneau) valable entre startDate et endDate.
+// Une modification crée de nouvelles lignes et clôt les anciennes : le passé reste figé.
+model Schedule {
+  id           String       @id @default(uuid())
+  medicationId String
+  slot         Slot
+  mealRelation MealRelation @default(NONE)
+  dose         String
+  notes        String?
+  daysOfWeek   Int[]        // ISO : 1 = lundi … 7 = dimanche
+  startDate    DateTime     @db.Date
+  endDate      DateTime?    @db.Date
+  createdAt    DateTime     @default(now())
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+
+  @@index([medicationId])
+  @@map("schedules")
+}
+
+model DoseLog {
+  id              String   @id @default(uuid())
+  medicationId    String
+  slot            Slot
+  date            DateTime @db.Date
+  takenAt         DateTime
+  takenByUserId   String
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  takenBy    User       @relation(fields: [takenByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([medicationId, slot, date])
+  @@map("dose_logs")
+}
+
+// Dose « au besoin » : aucune contrainte d'unicité.
+model ExtraDoseLog {
+  id            String   @id @default(uuid())
+  medicationId  String
+  date          DateTime @db.Date
+  takenAt       DateTime
+  takenByUserId String
+  note          String?
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  takenBy    User       @relation(fields: [takenByUserId], references: [id], onDelete: Restrict)
+
+  @@index([date])
+  @@map("extra_dose_logs")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  userId       String
+  action       String
+  entityType   String
+  entityId     String
+  before       Json?
+  after        Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt])
+  @@map("audit_log")
+}
+
+// Table utilisée par connect-pg-simple (sessions côté serveur).
+model Session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+  @@map("session")
+}

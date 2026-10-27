@@ -1,0 +1,45 @@
+{
+  "name": "@medsuivi/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../.env src/index.ts",
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/index.js --sourcemap",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "node --env-file=../.env ../node_modules/prisma/build/index.js migrate deploy",
+    "db:generate": "node --env-file=../.env ../node_modules/prisma/build/index.js generate",
+    "seed:prescription": "tsx --env-file=../.env scripts/seed-prescription.ts",
+    "sync:allowlist": "tsx --env-file=../.env scripts/sync-allowlist.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "connect-pg-simple": "^10.0.0",
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0",
+    "express": "^5.3.0",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/connect-pg-simple": "^7.0.3",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/node": "^20.19.43",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.17",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "esbuild": "^0.28.2",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
