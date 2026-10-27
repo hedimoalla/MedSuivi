@@ -1,4 +1,5 @@
-export const SLOTS = ['BREAKFAST', 'LUNCH', 'DINNER', 'BEDTIME', 'OUTSIDE_MEALS'] as const;
+// Ordre d'affichage de la journée : hors repas passe avant le coucher.
+export const SLOTS = ['BREAKFAST', 'LUNCH', 'DINNER', 'OUTSIDE_MEALS', 'BEDTIME'] as const;
 export type Slot = (typeof SLOTS)[number];
 
 export const MEAL_RELATIONS = ['BEFORE', 'DURING', 'AFTER', 'AWAY', 'NONE'] as const;

@@ -53,8 +53,8 @@ describe('buildChecklist', () => {
       'BREAKFAST',
       'LUNCH',
       'DINNER',
-      'BEDTIME',
       'OUTSIDE_MEALS',
+      'BEDTIME',
     ]);
     expect(itemsOf(checklist, 'BREAKFAST')).toEqual(['Pidogrel']);
     expect(itemsOf(checklist, 'DINNER')).toEqual(['Atrovast']);
