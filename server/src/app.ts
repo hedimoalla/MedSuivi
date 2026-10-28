@@ -14,6 +14,7 @@ import { createSessionMiddleware } from './session';
 import { createApiRouter } from './medications/routes';
 import { createDaysRouter } from './days/routes';
 import { createHistoryRouter } from './history/routes';
+import { createPushRouter } from './push/routes';
 import type { PrismaClient } from '@prisma/client';
 
 export interface AppDeps {
@@ -99,6 +100,10 @@ export function createApp(deps: AppDeps): express.Express {
     app.use('/api', createApiRouter({ prisma: deps.prisma }));
     app.use('/api', createDaysRouter({ prisma: deps.prisma }));
     app.use('/api', createHistoryRouter({ prisma: deps.prisma }));
+    app.use(
+      '/api',
+      createPushRouter({ prisma: deps.prisma, vapidPublicKey: config.vapid?.publicKey ?? null }),
+    );
   }
 
   // Tout le reste (application React) : authentification requise.

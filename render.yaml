@@ -4,7 +4,7 @@ services:
   - type: web
     name: medsuivi
     runtime: node
-    plan: free
+    plan: starter
     region: frankfurt
     healthCheckPath: /health
     # Installe aussi les outils de build (prisma, esbuild, vite), puis génère le client Prisma.
@@ -36,4 +36,13 @@ services:
       - key: ALLOWED_EMAILS
         sync: false
       - key: ADMIN_EMAILS
+        sync: false
+      # Alertes « prise non enregistrée ». Clés VAPID : npx web-push generate-vapid-keys (saisies dans Render).
+      - key: ALERTS_ENABLED
+        value: 'true'
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
         sync: false

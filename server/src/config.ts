@@ -17,6 +17,12 @@ const schema = z.object({
   ALLOWED_EMAILS: z.string().default(''),
   ADMIN_EMAILS: z.string().default(''),
   DEV_AUTH_BYPASS: bool,
+  // Alertes « prise non enregistrée ». Désactivées par défaut : la base est partagée avec le
+  // développement local, qui ne doit pas envoyer d'alertes à la famille.
+  ALERTS_ENABLED: bool,
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().optional(),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -53,8 +59,26 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
     }
   }
 
+  // Clés VAPID : générées une fois avec « npx web-push generate-vapid-keys ».
+  const vapidKeys = [parsed.VAPID_PUBLIC_KEY, parsed.VAPID_PRIVATE_KEY, parsed.VAPID_SUBJECT];
+  const vapidComplete = vapidKeys.every((value) => value && value.length > 0);
+  if (parsed.ALERTS_ENABLED && !vapidComplete) {
+    throw new Error(
+      'ALERTS_ENABLED=true exige VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY et VAPID_SUBJECT',
+    );
+  }
+
   return {
     nodeEnv: parsed.NODE_ENV,
+    alertsEnabled: parsed.ALERTS_ENABLED,
+    /** Null tant que les clés ne sont pas renseignées : l'abonnement aux alertes est alors refusé. */
+    vapid: vapidComplete
+      ? {
+          publicKey: parsed.VAPID_PUBLIC_KEY!,
+          privateKey: parsed.VAPID_PRIVATE_KEY!,
+          subject: parsed.VAPID_SUBJECT!,
+        }
+      : null,
     adminEmails: new Set(adminEmails),
     port: parsed.PORT,
     databaseUrl: parsed.DATABASE_URL,

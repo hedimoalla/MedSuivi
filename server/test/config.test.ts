@@ -56,4 +56,16 @@ describe('loadConfig', () => {
       /SESSION_SECRET/,
     );
   });
+
+  it('refuse les alertes activées sans clés VAPID', () => {
+    expect(() => loadConfig({ ...base, NODE_ENV: 'development', ALERTS_ENABLED: 'true' })).toThrow(
+      /VAPID/,
+    );
+  });
+
+  it('désactive les alertes par défaut, sans clés VAPID', () => {
+    const config = loadConfig({ ...base, NODE_ENV: 'development' });
+    expect(config.alertsEnabled).toBe(false);
+    expect(config.vapid).toBeNull();
+  });
 });

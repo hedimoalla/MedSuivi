@@ -10,9 +10,15 @@ export type MealRelation = (typeof MEAL_RELATIONS)[number];
  * Sert uniquement à décider si un créneau est « en retard ». Ce n'est pas un rappel.
  */
 export const SLOT_DEFAULT_TIMES: Record<Slot, string> = {
-  BREAKFAST: '10:00',
-  LUNCH: '15:00',
-  DINNER: '21:00',
+  BREAKFAST: '09:00',
+  LUNCH: '13:30',
+  DINNER: '20:00',
   BEDTIME: '23:30',
   OUTSIDE_MEALS: '11:00',
 };
+
+/** Repas dont l'absence de prise déclenche une alerte aux membres de la famille. */
+export const ALERT_SLOTS = ['BREAKFAST', 'LUNCH', 'DINNER'] as const satisfies readonly Slot[];
+
+/** Délai après l'heure indicative du repas avant l'alerte. */
+export const ALERT_DELAY_MINUTES = 60;

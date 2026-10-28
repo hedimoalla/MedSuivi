@@ -23,6 +23,7 @@ Checklist partagée de prise de médicaments pour la famille. Chaque jour, les p
 - **Historique** : calendrier mensuel. Chaque jour est coloré selon ✅ tout pris, 🟡 en partie, ❌ rien de pris, ⏳ en cours. Toucher un jour l'ouvre dans l'écran Aujourd'hui.
 - **Rapport** (🖨️) : médicaments en cours, observance sur les 30 derniers jours par médicament, doses au besoin. Imprimable ou enregistrable en PDF depuis le navigateur.
 - **Installation sur téléphone** : l'app s'installe sur l'écran d'accueil (Android : bouton « Installer » ou menu du navigateur ; iPhone : Partager → « Sur l'écran d'accueil »). Elle s'ouvre alors en plein écran, avec l'icône 💊. Seuls les fichiers de l'interface sont mis en cache ; les données de santé ne sont jamais stockées sur l'appareil.
+- **Alertes** : chaque membre peut activer les alertes sur son téléphone. Si une prise d'un repas (petit-déjeuner, déjeuner, dîner) n'est pas cochée une heure après l'heure indicative, tous les membres ayant activé les alertes reçoivent une notification. Une seule alerte par repas et par jour. Le message ne mentionne aucun médicament.
 - **Thème** : mode clair par défaut, mode sombre activable avec le bouton 🌙 / ☀️. Le choix est mémorisé sur l'appareil.
 
 ## Prérequis
@@ -61,6 +62,10 @@ Toutes les variables sont listées dans `.env.example`. Le fichier `.env` n'est 
 | `ADMIN_EMAILS`         | Administrateur(s) : seuls eux peuvent ajouter, modifier ou archiver un médicament. Doit être inclus dans `ALLOWED_EMAILS`                              | `moi@gmail.com`                                                                                                |
 | `NODE_ENV`             | `development`, `test` ou `production`                                                                                                                  | `development`                                                                                                  |
 | `DEV_AUTH_BYPASS`      | `true` = connexion locale sans Google. **Refusé** si `NODE_ENV` n'est pas `development`                                                                | `false`                                                                                                        |
+| `ALERTS_ENABLED`       | Active les alertes « prise non enregistrée ». Exige les trois clés VAPID                                                                               | `false`                                                                                                        |
+| `VAPID_PUBLIC_KEY`     | Clé publique Web Push, générée une fois avec `npx web-push generate-vapid-keys`                                                                        | (voir ci-dessous)                                                                                              |
+| `VAPID_PRIVATE_KEY`    | Clé privée Web Push (même commande). Ne jamais la committer                                                                                            |                                                                                                                |
+| `VAPID_SUBJECT`        | Contact de l'application : `mailto:` suivi d'une adresse                                                                                               | `mailto:moi@gmail.com`                                                                                         |
 | `PORT`                 | Port d'écoute                                                                                                                                          | `3000`                                                                                                         |
 | `TZ`                   | Fuseau du serveur. Les dates « aujourd'hui » sont toujours calculées en `Africa/Tunis`                                                                 | `Africa/Tunis`                                                                                                 |
 
@@ -102,7 +107,7 @@ npm run sync:allowlist      # crée les comptes des adresses de ALLOWED_EMAILS
 ## Tests et qualité
 
 ```bash
-npm test          # 65 tests du serveur
+npm test          # 80 tests du serveur
 npm run typecheck # vérification TypeScript de tous les espaces de travail
 npm run lint      # ESLint
 npm run format    # Prettier
@@ -134,7 +139,7 @@ Le fichier `render.yaml` décrit le service web. La base reste sur Supabase : Re
 **1. Créer le service**
 
 1. Sur https://dashboard.render.com : **New → Blueprint**, puis choisissez le dépôt `hedimoalla/MedSuivi`.
-2. Render lit `render.yaml` et propose le service `medsuivi` (région Francfort, plan Free). Validez.
+2. Render lit `render.yaml` et propose le service `medsuivi` (région Francfort, plan Starter). Validez.
 
 **2. Renseigner les variables** (**Environment** du service). Les valeurs ne sont jamais dans le dépôt.
 
@@ -147,6 +152,10 @@ Le fichier `render.yaml` décrit le service web. La base reste sur Supabase : Re
 | `APP_BASE_URL`         | `https://medsuivi.onrender.com` (ou l'adresse affichée par Render, sans `/` final) |
 | `ALLOWED_EMAILS`       | les trois adresses, en minuscules, séparées par des virgules                       |
 | `ADMIN_EMAILS`         | l'administrateur, inclus dans `ALLOWED_EMAILS`                                     |
+| `ALERTS_ENABLED`       | `true` (déjà fixé par le blueprint). Ne jamais activer en local                    |
+| `VAPID_PUBLIC_KEY`     | clé publique Web Push (voir ci-dessous)                                            |
+| `VAPID_PRIVATE_KEY`    | clé privée Web Push. Ne jamais la committer                                        |
+| `VAPID_SUBJECT`        | contact de l'application, `mailto:` suivi d'une adresse                            |
 
 `NODE_ENV=production` et `DEV_AUTH_BYPASS=false` sont déjà fixés par le blueprint. L'application refuse de démarrer si `DEV_AUTH_BYPASS` est activé hors développement.
 
@@ -168,7 +177,7 @@ Ce certificat permet de vérifier la connexion TLS à Supabase. Ne le committez 
 
 **Points à connaître**
 
-- **Démarrage à froid** : le plan Free met le service en veille après 15 minutes sans trafic. Le premier chargement prend 30 à 60 secondes.
+- **Plan Starter** (7 $/mois) : le service ne se met pas en veille, donc les alertes partent à l'heure. Le plan Free ferait dormir le service et retarderait les alertes.
 - **Une seule base** : la production et le développement local utilisent la même base Supabase. Une prise cochée en local apparaît donc sur Render, et réciproquement. Pour séparer les deux, créez un second projet Supabase et utilisez son URL dans votre `.env` local.
 - **Seed** : l'ordonnance est déjà chargée dans la base. Ne relancez pas `seed:prescription` en production.
 - **Changer l'adresse** : si l'adresse `APP_BASE_URL` change, mettez à jour aussi les URI de redirection Google.
