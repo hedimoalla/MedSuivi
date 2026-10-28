@@ -19,6 +19,7 @@ export const fr = {
     person: '👤',
     note: '📝',
     info: 'ℹ️',
+    bell: '🔔',
     notes: '📝',
     slots: {
       BREAKFAST: '🍳',
@@ -27,6 +28,19 @@ export const fr = {
       BEDTIME: '🛏️',
       OUTSIDE_MEALS: '⏰',
     },
+  },
+  alerts: {
+    intro:
+      'Recevoir une alerte sur ce téléphone si une prise de repas n’est pas cochée une heure après l’heure prévue.',
+    enable: 'Activer les alertes',
+    disable: 'Désactiver sur cet appareil',
+    enabled: 'Alertes activées sur cet appareil.',
+    denied:
+      'Les notifications sont bloquées pour ce site. Autorisez-les dans les réglages du navigateur, puis rechargez la page.',
+    unavailable: 'Les alertes ne sont pas encore configurées sur le serveur.',
+    unsupported:
+      'Ce navigateur ne permet pas les alertes. Sur iPhone, ajoutez d’abord MedSuivi à l’écran d’accueil (menu Partager), puis ouvrez-la depuis son icône.',
+    failed: 'L’alerte n’a pas pu être activée. Réessayez.',
   },
   install: {
     button: 'Installer MedSuivi sur l’écran d’accueil',

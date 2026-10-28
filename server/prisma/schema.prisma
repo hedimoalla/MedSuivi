@@ -32,9 +32,10 @@ model User {
   createdAt   DateTime  @default(now())
   lastLoginAt DateTime?
 
-  doseLogs      DoseLog[]
-  extraDoseLogs ExtraDoseLog[]
-  auditLogs     AuditLog[]
+  doseLogs          DoseLog[]
+  extraDoseLogs     ExtraDoseLog[]
+  auditLogs         AuditLog[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -117,6 +118,33 @@ model AuditLog {
 
   @@index([createdAt])
   @@map("audit_log")
+}
+
+// Appareil d'un membre qui accepte les alertes (Web Push). Un appareil = un endpoint unique.
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+// Une alerte « prise non enregistrée » par repas et par jour. La clé unique empêche les doublons,
+// même si le serveur redémarre ou tourne en plusieurs exemplaires.
+model AlertLog {
+  id     String   @id @default(uuid())
+  date   DateTime @db.Date
+  slot   Slot
+  sentAt DateTime @default(now())
+
+  @@unique([date, slot])
+  @@map("alert_log")
 }
 
 // Table utilisée par connect-pg-simple (sessions côté serveur).

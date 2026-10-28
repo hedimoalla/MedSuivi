@@ -53,4 +53,11 @@ La famille vérifiera la liste contre l'ordonnance et les boîtes. Ne rien ajout
 
 ## Hors périmètre pour l'instant
 
-Rappels push, e-mail ou SMS ; suivi des stocks ; tension artérielle ; plusieurs patients. Les points d'accroche sont prévus dans le plan (`server/src/reminders` pour les rappels, un module de stock lié à `Medication`).
+Rappels e-mail ou SMS ; suivi des stocks ; tension artérielle ; plusieurs patients. Un module de stock lié à `Medication` reste prévu.
+
+## Alertes push (en place)
+
+- Alerte Web Push aux membres de `ALLOWED_EMAILS` ayant accepté sur leur appareil, si une prise d'un repas (petit-déjeuner, déjeuner, dîner) n'est pas cochée une heure après l'heure indicative.
+- Logique dans `server/src/domain/alerts.ts`, planificateur dans `server/src/reminders/`. Une alerte par repas et par jour (table `alert_log`).
+- Activé seulement si `ALERTS_ENABLED=true` (production). La base est partagée avec le développement local : un serveur local ne doit jamais envoyer d'alertes.
+- Le texte de la notification ne contient que le repas, jamais le nom d'un médicament.
