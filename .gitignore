@@ -9,3 +9,5 @@ coverage/
 .DS_Store
 .vite/
 web/dev-dist/
+# Export local du schéma Supabase (données de santé : ne pas committer)
+supabase.md
